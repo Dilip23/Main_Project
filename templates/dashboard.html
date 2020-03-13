@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+
+{% block body %}
+     <h1>Dashboard <small>Welcome {{session.email}}</small> </h1>
+     <a class="btn btn-success"href="/add_problem">Add Problem</a>
+     <hr>
+     <table class="table table-striped">
+          <tr>
+               <th>Title</th>
+               <th>Level</th>
+               <th>Points</th>
+               <th>Tags</th>
+          </tr>
+
+          {% for problem in problems %}
+               <tr>
+                    <td>{{problem.title}}</td>
+                    <td>{{problem.level_type}}</td>
+                    <td>{{problem.points}}</td>
+                    <td>{{problem.tags}}</td>
+               </tr>
+          {% endfor %}
+
+     </table>
+
+{% endblock %}

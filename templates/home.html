@@ -1,0 +1,13 @@
+{%extends 'base.html'%}
+
+{% block body%}
+<div class="jumbotron text-center">
+
+    <center><h1 class="display-4">Megatron</h1></center>
+    <center><p class="lead">Question Recommendation System</p></center>
+    {% if session.logged_in == NULL %}
+    <a href="/register" class="btn btn-primary btn-lg">Register</a>
+    <a href="/login" class="btn btn-success btn-lg">Login</a>
+    {% endif %}
+</div>
+{% endblock %}

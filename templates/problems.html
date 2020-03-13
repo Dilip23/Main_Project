@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block body %}
+     <table class="table table-striped">
+          <tr>
+               <th>Title</th>
+               <th>Level</th>
+               <th>Points</th>
+               <th>Tags</th>
+          </tr>
+
+          {% for problem in problems %}
+               <tr>
+                    <td><a href="/problem/{{problem.title}}">{{problem.title}}</a></td>
+                    <td>{{problem.level_type}}</td>
+                    <td>{{problem.points}}</td>
+                    <td>{{problem.tags}}</td>
+               </tr>
+          {% endfor %}
+
+     </table>
+
+{% endblock %}

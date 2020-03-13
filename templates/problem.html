@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block body %}
+     <h1>{{problem.title}}</h1>
+     <h4>Level: {{ problem.level_type }}</h4>
+     <h4>Tags: {{ problem.tags }}</h4>
+     {{ problem.body | safe}}
+
+{% endblock %}
