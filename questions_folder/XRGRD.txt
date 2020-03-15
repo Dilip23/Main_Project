@@ -1,0 +1,122 @@
+<div class="problem-statement mathjax-support" id="problem-statement">
+          
+          <span class="solution-visible-txt mathjax-support">All submissions for this problem are available.</span><h3 class=" mathjax-support"> Read problems statements in <a target="_blank" href="http://www.codechef.com/download/translated/COOK78/mandarin/XRGRD.pdf" class=" mathjax-support">Mandarin Chinese</a>, <a target="_blank" href="http://www.codechef.com/download/translated/COOK78/russian/XRGRD.pdf" class=" mathjax-support">Russian</a> and <a target="_blank" href="http://www.codechef.com/download/translated/COOK78/vietnamese/XRGRD.pdf" class=" mathjax-support">Vietnamese</a> as well.</h3>
+
+
+<p class=" mathjax-support">Recently Chef invented a new structure that he has called <b class=" mathjax-support">Xor Grid</b>. It is an infinitely large grid <b class=" mathjax-support">G</b> filled with numbers based on these three rules:</p>
+
+<p class=" mathjax-support">
+</p><ol class=" mathjax-support">
+    <li class=" mathjax-support"><b class=" mathjax-support">G[1, c] = 1</b> for all <b class=" mathjax-support">c ≥ 1</b></li>
+    <li class=" mathjax-support"><b class=" mathjax-support">G[r, 1] = r</b> for all <b class=" mathjax-support">r ≥ 1</b></li>
+    <li class=" mathjax-support"><b class=" mathjax-support">G[r, c] = G[r - 1, c] <a href="http://en.wikipedia.org/wiki/Bitwise_operation#XOR" class=" mathjax-support">xor</a> G[r, c - 1]</b> for all <b class=" mathjax-support">r &gt; 1</b> and <b class=" mathjax-support">c &gt; 1</b></li>
+</ol>
+<p class=" mathjax-support"></p>
+
+<p class=" mathjax-support">Now Chef is wondering, what are the <b class=" mathjax-support">xor sums</b> of all the numbers within some specific rectangles of the <b class=" mathjax-support">Xor Grid</b>?</p>
+
+<h3 class=" mathjax-support">Note</h3> Xor sum refers to successive xor operations on integers. For example, xor sum of integers <b class=" mathjax-support">x<sub class=" mathjax-support">1</sub></b>, <b class=" mathjax-support">x<sub class=" mathjax-support">2</sub></b>, <b class=" mathjax-support">x<sub class=" mathjax-support">3</sub></b>, ..., <b class=" mathjax-support">x<sub class=" mathjax-support">n</sub></b> will be (..((<b class=" mathjax-support">x<sub class=" mathjax-support">1</sub></b> xor <b class=" mathjax-support">x<sub class=" mathjax-support">2</sub></b>) xor <b class=" mathjax-support">x<sub class=" mathjax-support">3</sub></b>)... xor <b class=" mathjax-support">x<sub class=" mathjax-support">n</sub></b>).<p class=" mathjax-support"></p>
+
+<h3 class=" mathjax-support">Input</h3>
+<p class=" mathjax-support">The first line of the input contains an integer <b class=" mathjax-support">T</b> denoting the number of test cases.</p>
+<p class=" mathjax-support">For each test case, the only line of input contains four integers <b class=" mathjax-support">r1</b>, <b class=" mathjax-support">r2</b>, <b class=" mathjax-support">c1</b> and <b class=" mathjax-support">c2</b>, where <b class=" mathjax-support">(r1, c1)</b>, <b class=" mathjax-support">(r2, c2)</b> denotes the coordinates of top left and bottom right cells of the rectangle.</p>
+
+<h3 class=" mathjax-support">Output</h3>
+For each test case, output a single integer ― the <b class=" mathjax-support">xor sum</b> of all the numbers within <b class=" mathjax-support">G[r1..r2, c1..c2]</b>.
+
+<h3 class=" mathjax-support">Constraints</h3>
+<ul class=" mathjax-support">
+    <li class=" mathjax-support"><b class=" mathjax-support">1</b> ≤ <b class=" mathjax-support">T</b> ≤ <b class=" mathjax-support">10 000</b></li>
+    <li class=" mathjax-support"><b class=" mathjax-support">1</b> ≤ <b class=" mathjax-support">r1</b> ≤ <b class=" mathjax-support">r2</b> ≤ <b class=" mathjax-support">10<sup class=" mathjax-support">18</sup></b></li>
+    <li class=" mathjax-support"><b class=" mathjax-support">1</b> ≤ <b class=" mathjax-support">c1</b> ≤ <b class=" mathjax-support">c2</b> ≤ <b class=" mathjax-support">10<sup class=" mathjax-support">18</sup></b></li>
+</ul>
+<p class=" mathjax-support"> </p>
+
+<h3 class=" mathjax-support">Example</h3>
+<pre class=" mathjax-support"><b class=" mathjax-support">Input:</b>
+5
+1 1 71 93
+23959042 23959042 1 1
+1 2 1 2
+2 7 3 6
+5 8 5 8
+
+<b class=" mathjax-support">Output:</b>
+1
+23959042
+1
+6
+4
+</pre>
+<h3 class=" mathjax-support">Explanation</h3>
+<b class=" mathjax-support">Example case 1.</b> First row is filled with ones, so our rectangle contains <b class=" mathjax-support">23</b> ones and their <b class=" mathjax-support">xor sum</b> is one.
+<p class=" mathjax-support"></p>
+<b class=" mathjax-support">Example case 2.</b> Here we have a rectangle that consists of one cell <b class=" mathjax-support">G[23959042, 1] = 23959042</b>.
+<p class=" mathjax-support"></p>
+<b class=" mathjax-support">Example case 3.</b> The rectangle contains four numbers: <b class=" mathjax-support">1 1 2 3</b> and their <b class=" mathjax-support">xor sum</b> is <b class=" mathjax-support">1</b>.
+        
+
+        <!--.problem-statement-->
+
+        <aside class="problem-info mathjax-support">
+          
+          
+          <p class=" mathjax-support">
+            <label class=" mathjax-support">Author:</label>
+            <span class=" mathjax-support"><a href="/users/alex_2oo8" data-bindattr-280="280" class=" mathjax-support"><span class="rating mathjax-support" style="display: inline-block; 
+                    font-size: 10px; 
+                    background: #D0011B;
+                    padding: 0 3px; 
+                    line-height: 1.3; 
+                    color: white;
+                    margin-right: 2px;">7★</span><span class=" mathjax-support">alex_2oo8</span></a></span>
+          </p>
+           
+          <p class=" mathjax-support">
+            <label class=" mathjax-support">Tester:</label>
+            <span class=" mathjax-support"><a href="/users/kingofnumbers" data-bindattr-282="282" class=" mathjax-support"><span class="rating mathjax-support" style="display: inline-block; 
+                    font-size: 10px; 
+                    background: #FF7F00;
+                    padding: 0 3px; 
+                    line-height: 1.3; 
+                    color: white;
+                    margin-right: 2px;">6★</span><span class=" mathjax-support">kingofnumbers</span></a></span>
+          </p>
+           
+          <p class=" mathjax-support">
+            <label class=" mathjax-support">Editorial:</label>
+            <span class=" mathjax-support"><a href="https://discuss.codechef.com/problems/XRGRD" data-bindattr-284="284" class=" mathjax-support">https://discuss.codechef.com/problems/XRGRD</a></span>
+          </p>
+           
+          <p class=" mathjax-support">
+            <label class=" mathjax-support">Tags:</label>
+            <span class=" mathjax-support"><a class="problem-tag-small  mathjax-support" href="/tags/problems/alex_2oo8">alex_2oo8</a>, <a class="problem-tag-small  mathjax-support" href="/tags/problems/bitwise-operatn">bitwise-operatn</a>, <a class="problem-tag-small  mathjax-support" href="/tags/problems/cook78">cook78</a>, <a class="problem-tag-small  mathjax-support" href="/tags/problems/easy-medium">easy-medium</a>, <a class="problem-tag-small  mathjax-support" href="/tags/problems/fractals">fractals</a>, <a class="problem-tag-small  mathjax-support" href="/tags/problems/maths">maths</a></span>
+          </p>
+           
+          <p class=" mathjax-support">
+            <label class=" mathjax-support">Date Added:</label>
+            <span class=" mathjax-support">8-08-2016</span>
+          </p>
+          
+          <p class=" mathjax-support">
+            <label class=" mathjax-support">Time Limit:</label>
+            <span class=" mathjax-support">1 secs</span>
+          </p>
+          <p class=" mathjax-support">
+            <label class=" mathjax-support">Source Limit:</label>
+            <span class=" mathjax-support">50000 Bytes</span>
+          </p>
+          <p class=" mathjax-support">
+            <label class=" mathjax-support">Languages:</label>
+            <span class=" mathjax-support">C, CPP14, JAVA, PYTH, PYTH 3.6, PYPY, CS2, PAS fpc, PAS gpc, RUBY, PHP, GO, NODEJS, HASK, SCALA, D, PERL, FORT, WSPC, ADA, CAML, ICK, BF, ASM, CLPS, PRLG, ICON, SCM qobi, PIKE, ST, NICE, LUA, BASH, NEM, LISP sbcl, LISP clisp, SCM guile, JS, ERL, TCL, PERL6, TEXT, SCM chicken, PYP3, CLOJ, FS</span>
+          </p>
+        </aside>
+        <!--.problem-info-->
+
+        <div class="text-center mathjax-support">
+          <input type="hidden" value="value" data-bindattr-279="279" class=" mathjax-support">
+          
+          <a class="button blue mathjax-support" href="/submit/XRGRD" data-bindattr-288="288" style="padding:0.4rem 1.5rem 0.425rem;">Submit</a>
+          
+          </div>
+        </div>

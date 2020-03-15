@@ -1,9 +1,20 @@
 {% extends 'base.html' %}
 
 {% block body %}
-     <h1>{{problem.title}}</h1>
-     <h4>Level: {{ problem.level_type }}</h4>
-     <h4>Tags: {{ problem.tags }}</h4>
-     {{ problem.body | safe}}
+     <h2>{{ problem.title }}</h2>
+     <hr>
+     <p><b>Level:</b> {{ problem.level_type }}</p>
+     <p><b>Tags: </b>{{ problem.tags }}</p>
+     <hr>
+
+     {% if session.logged_in != NULL %}
+          <form class="" action="/problem/{{problem.title}}/getFile" method="post" enctype="multipart/form-data">
+               <b>File: </b><input type="file" name="myfile" value="">
+               <br><br>
+               <input type="submit" name="" class="btn btn-primary" value="Submit">
+          </form>
+     {% endif %}
+     <hr>
+     <p>{{content|safe}}</p>
 
 {% endblock %}

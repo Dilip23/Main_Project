@@ -1,0 +1,102 @@
+<div class="problem-statement mathjax-support" id="problem-statement">
+          
+          <span class="solution-visible-txt mathjax-support">All submissions for this problem are available.</span><h3 class=" mathjax-support"> Read problems statements in <a target="_blank" href="http://www.codechef.com/download/translated/SNCKFL17/mandarin/ANDGRAPH.pdf" class=" mathjax-support">Mandarin Chinese</a>, <a target="_blank" href="http://www.codechef.com/download/translated/SNCKFL17/russian/ANDGRAPH.pdf" class=" mathjax-support">Russian</a> and <a target="_blank" href="http://www.codechef.com/download/translated/SNCKFL17/vietnamese/ANDGRAPH.pdf" class=" mathjax-support">Vietnamese</a> as well.</h3>
+
+<p class=" mathjax-support">Chef has a huge directed graph <b class=" mathjax-support">G</b> which has a vertex for every non-negative integer. The edges of the graph follow a strict pattern: there is a directed edge from vertex <b class=" mathjax-support">u</b> to vertex <b class=" mathjax-support">v</b> if and only if both the following two conditions are satisfied:
+</p><ul class=" mathjax-support">
+  <li class=" mathjax-support"><b class=" mathjax-support">u</b> &lt; <b class=" mathjax-support">v</b></li>
+  <li class=" mathjax-support">(<b class=" mathjax-support">u</b> AND <b class=" mathjax-support">v</b>) = 0, where AND is bitwise AND which is defined below.</li>
+</ul>
+<br class=" mathjax-support">
+<p class=" mathjax-support">Now Chef got curious as to how many different paths there are in graph <b class=" mathjax-support">G</b> from vertex <b class=" mathjax-support">s</b> to vertex <b class=" mathjax-support">t</b>. He has a total of <b class=" mathjax-support">T</b> questions of the above form for you. As the exact numbers of paths may be extremely large, print the answers modulo 998244353.
+
+</p><p class=" mathjax-support"><b class=" mathjax-support">Note</b>: A bitwise AND takes two equal-length binary representations and performs the logical AND operation on each pair of the corresponding bits, by multiplying them. Thus, if both bits in the compared position are 1, the bit in the resulting binary representation is 1 (1 × 1 = 1); otherwise, the result is 0 (1 × 0 = 0 and 0 × 0 = 0). For example, 3 AND 5 = (011)<sub class=" mathjax-support">2</sub> AND (101)<sub class=" mathjax-support">2</sub> = (001)<sub class=" mathjax-support">2</sub> = 1</p>
+
+<h3 class=" mathjax-support">Input</h3>
+The first line of the input contains an integer <b class=" mathjax-support">T</b> denoting the number of test cases. <br class=" mathjax-support">
+Each test case consists of two lines containing binary strings <b class=" mathjax-support">s<sub class=" mathjax-support">2</sub></b> and <b class=" mathjax-support">t<sub class=" mathjax-support">2</sub></b> that are binary representations of numbers <b class=" mathjax-support">s</b> and <b class=" mathjax-support">t</b> respectively.
+
+<h3 class=" mathjax-support">Output</h3>
+For each test case, output a single line containing one integer ― the number of different paths from <b class=" mathjax-support">s</b> to <b class=" mathjax-support">t</b> modulo 998244353.
+
+<h3 class=" mathjax-support">Constraints</h3>
+<ul class=" mathjax-support">
+    <li class=" mathjax-support">1 ≤ <b class=" mathjax-support">|s<sub class=" mathjax-support">2</sub>|</b> = <b class=" mathjax-support">|t<sub class=" mathjax-support">2</sub>|</b> ≤ 4 000</li>
+    <li class=" mathjax-support">1 ≤ [sum of <b class=" mathjax-support">|s<sub class=" mathjax-support">2</sub>|</b> over all <b class=" mathjax-support">T</b> test cases] ≤ 10 000</li>
+    <li class=" mathjax-support"><b class=" mathjax-support">s</b> &lt; <b class=" mathjax-support">t</b></li>
+    <li class=" mathjax-support"><b class=" mathjax-support">t<sub class=" mathjax-support">2</sub></b> contains no leading zeroes, while <b class=" mathjax-support">s<sub class=" mathjax-support">2</sub></b> can contain some</li>
+</ul>
+
+<h3 class=" mathjax-support">Example</h3>
+<pre class=" mathjax-support"><b class=" mathjax-support">Input:</b>
+3
+01
+10
+01
+11
+001
+100
+
+<b class=" mathjax-support">Output:</b>
+1
+0
+2
+</pre>
+
+<h3 class=" mathjax-support">Explanation</h3>
+<b class=" mathjax-support">Example case 1:</b> There is a direct edge from vertex 1 to vertex 2 and this is the only path between these two vertices.
+<p class=" mathjax-support"> </p>
+<b class=" mathjax-support">Example case 2:</b> Vertex 3 contains only one incoming edge in graph <b class=" mathjax-support">G</b> and this edge is from vertex 0, but as there are no path from vertex 1 to vertex 0, thus there are no paths to vertex 3 as well.
+<p class=" mathjax-support"> </p>
+<b class=" mathjax-support">Example case 3:</b> The two paths are: 1  →   2 → 4 and 1 → 4.
+
+        
+
+        <!--.problem-statement-->
+
+        <aside class="problem-info mathjax-support">
+          
+          
+          <p class=" mathjax-support">
+            <label class=" mathjax-support">Author:</label>
+            <span class=" mathjax-support"><a href="/users/alex_2oo8" data-bindattr-280="280" class=" mathjax-support"><span class="rating mathjax-support" style="display: inline-block; 
+                    font-size: 10px; 
+                    background: #D0011B;
+                    padding: 0 3px; 
+                    line-height: 1.3; 
+                    color: white;
+                    margin-right: 2px;">7★</span><span class=" mathjax-support">alex_2oo8</span></a></span>
+          </p>
+             
+          <p class=" mathjax-support">
+            <label class=" mathjax-support">Tags:</label>
+            <span class=" mathjax-support"><a class="problem-tag-small  mathjax-support" href="/tags/problems/alex_2oo8">alex_2oo8</a></span>
+          </p>
+           
+          <p class=" mathjax-support">
+            <label class=" mathjax-support">Date Added:</label>
+            <span class=" mathjax-support">17-06-2017</span>
+          </p>
+          
+          <p class=" mathjax-support">
+            <label class=" mathjax-support">Time Limit:</label>
+            <span class=" mathjax-support">1.5 secs</span>
+          </p>
+          <p class=" mathjax-support">
+            <label class=" mathjax-support">Source Limit:</label>
+            <span class=" mathjax-support">50000 Bytes</span>
+          </p>
+          <p class=" mathjax-support">
+            <label class=" mathjax-support">Languages:</label>
+            <span class=" mathjax-support">C, CPP14, JAVA, PYTH, PYTH 3.6, PYPY, CS2, PAS fpc, PAS gpc, RUBY, PHP, GO, NODEJS, HASK, SCALA, D, PERL, FORT, WSPC, ADA, CAML, ICK, BF, ASM, CLPS, PRLG, ICON, SCM qobi, PIKE, ST, NICE, LUA, BASH, NEM, LISP sbcl, LISP clisp, SCM guile, JS, ERL, TCL, PERL6, TEXT, SCM chicken, PYP3, CLOJ, FS</span>
+          </p>
+        </aside>
+        <!--.problem-info-->
+
+        <div class="text-center mathjax-support">
+          <input type="hidden" value="value" data-bindattr-279="279" class=" mathjax-support">
+          
+          <a class="button blue mathjax-support" href="/submit/ANDGRAPH" data-bindattr-284="284" style="padding:0.4rem 1.5rem 0.425rem;">Submit</a>
+          
+          </div>
+        </div>

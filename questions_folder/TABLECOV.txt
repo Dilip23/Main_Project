@@ -1,0 +1,175 @@
+<div class="problem-statement mathjax-support" id="problem-statement">
+          
+          <span class="solution-visible-txt mathjax-support">All submissions for this problem are available.</span><h3 class=" mathjax-support"> Read problems statements in <a target="_blank" href="http://www.codechef.com/download/translated/LTIME32/mandarin/TABLECOV.pdf" class=" mathjax-support">Mandarin Chinese </a>, <a target="_blank" href="http://www.codechef.com/download/translated/LTIME32/russian/TABLECOV.pdf" class=" mathjax-support">Russian</a> and <a target="_blank" href="http://www.codechef.com/download/translated/LTIME32/vietnamese/TABLECOV.pdf" class=" mathjax-support">Vietnamese</a> as well.</h3>
+
+
+<p class=" mathjax-support">
+Chef's friend Aayan loves Ghariyals (those long-mouthed crocodile like creatures). Chef's other friend, Mr. KG, knows about this love of Aayan's. So one day, he gives Aayan an interesting problem:
+</p>
+
+<p class=" mathjax-support">
+Mr. KG gives Aayan a table <b class=" mathjax-support">A</b> of <b class=" mathjax-support">N</b> rows and <b class=" mathjax-support">M</b> columns filled with non-negative integers. The rows and colums of the table are indexed starting from 1. <b class=" mathjax-support">A[i][j]</b> denotes the <b class=" mathjax-support">j</b>'th integer in the <b class=" mathjax-support">i</b>'th row of <b class=" mathjax-support">A</b>.
+</p>
+
+<p class=" mathjax-support">
+Let's consider some sequence (<b class=" mathjax-support">i<sub class=" mathjax-support">1</sub></b>, <b class=" mathjax-support">j<sub class=" mathjax-support">1</sub></b>), (<b class=" mathjax-support">i<sub class=" mathjax-support">2</sub></b>, <b class=" mathjax-support">j<sub class=" mathjax-support">2</sub></b>), ..., (<b class=" mathjax-support">i<sub class=" mathjax-support">K</sub></b>, <b class=" mathjax-support">j<sub class=" mathjax-support">K</sub></b>)(1 ≤ <b class=" mathjax-support">K</b>) of the table cells.
+</p>
+
+<p class=" mathjax-support"> 
+A sequence of table cells is said to be a <i class=" mathjax-support">valid Ghariyal-path</i> if all of the following conditions holds:
+
+</p><ul class=" mathjax-support">
+  <li class=" mathjax-support">(<b class=" mathjax-support">i<sub class=" mathjax-support">1</sub></b>, <b class=" mathjax-support">j<sub class=" mathjax-support">1</sub></b>) equals to (1, 1) - the top-left cell of the table
+  </li><li class=" mathjax-support">(<b class=" mathjax-support">i<sub class=" mathjax-support">K</sub></b>, <b class=" mathjax-support">j<sub class=" mathjax-support">K</sub></b>) equals to (N, M) - the bottom-right cell of the table
+  </li><li class=" mathjax-support"><b class=" mathjax-support">i<sub class=" mathjax-support">t</sub></b> ≤ <b class=" mathjax-support">i<sub class=" mathjax-support">t + 1</sub></b> for each integer <b class=" mathjax-support">1 ≤ t &lt; K</b>
+  </li><li class=" mathjax-support"><b class=" mathjax-support">j<sub class=" mathjax-support">t</sub></b> ≤ <b class=" mathjax-support">j<sub class=" mathjax-support">t + 1</sub></b> for each integer <b class=" mathjax-support">1 ≤ t &lt; K</b>
+  </li><li class=" mathjax-support">|<b class=" mathjax-support">i<sub class=" mathjax-support">t + 1</sub></b> - <b class=" mathjax-support">i<sub class=" mathjax-support">t</sub></b>| + |<b class=" mathjax-support">j<sub class=" mathjax-support">t + 1</sub></b> - <b class=" mathjax-support">j<sub class=" mathjax-support">t</sub></b>| = 1 for each integer <b class=" mathjax-support">1 ≤ t &lt; K</b>
+</li></ul>
+<p class=" mathjax-support"></p>
+
+<p class=" mathjax-support">One can easily prove that the length of any valid Ghariyal-path is exactly <b class=" mathjax-support">N + M - 1</b> cells. It's also easy to prove that any valid Ghariyal-path contains any of the table cells at most once.</p>
+
+<p class=" mathjax-support">Mr. KG asked Aayan to cover the given table with valid Ghariyal-paths. To be precise, his task is to find the minimal number of valid Ghariyal-paths such that for any table cell with coordinates (<b class=" mathjax-support">i</b>, <b class=" mathjax-support">j</b>) the following condition is satisfied: at least <b class=" mathjax-support">A[i][j]</b> valid Ghariyal-paths contain the (<b class=" mathjax-support">i</b>, <b class=" mathjax-support">j</b>)-cell.</p>
+
+<h3 class=" mathjax-support">Input</h3>
+<p class=" mathjax-support">The first line of the input contains an integer <b class=" mathjax-support">T</b> denoting the number of test cases. The description of <b class=" mathjax-support">T</b> test cases follows.</p>
+
+<p class=" mathjax-support">
+The first line of each test case contains two integers <b class=" mathjax-support">N</b> and <b class=" mathjax-support">M</b>. The next <b class=" mathjax-support">N</b> lines contain <b class=" mathjax-support">M</b> non-negative integers each denoting the given table <b class=" mathjax-support">A</b>.
+</p>
+
+<h3 class=" mathjax-support">Output</h3>
+<p class=" mathjax-support">
+For each test case, output a single line containing the minimal number of valid Ghariyal-paths to cover the table as described above.
+</p>
+
+<h3 class=" mathjax-support">Constraints</h3>
+<ul class=" mathjax-support">
+<li class=" mathjax-support">1 ≤ <b class=" mathjax-support">T</b> ≤ 10</li>
+<li class=" mathjax-support">0 ≤ <b class=" mathjax-support">A[i][j]</b> ≤ 1000</li>
+<li class=" mathjax-support">Subtask 1(20 points): 1 ≤ <b class=" mathjax-support">N</b> ≤ 20</li>
+<li class=" mathjax-support">Subtask 2(30 points): 1 ≤ <b class=" mathjax-support">N</b> ≤ 100</li>
+<li class=" mathjax-support">Subtask 3(50 points): 1 ≤ <b class=" mathjax-support">N</b> ≤ 1000</li>
+</ul>
+
+<h3 class=" mathjax-support">Note</h3>
+<p class=" mathjax-support">
+The first test of the first subtask is the example test. It's made for you to make sure, that your solution produces the same verdict both on your machine and our server.
+</p>
+
+<h3 class=" mathjax-support">Time Limits</h3>
+<p class=" mathjax-support">
+Time limit for the first subtask is 2 s. Time limit for the second and the third subtasks is 3 s.
+</p>
+
+<h3 class=" mathjax-support">Example</h3>
+<pre class=" mathjax-support"><b class=" mathjax-support">Input:</b>
+2
+5 4
+1 1 1 1
+1 2 1 1
+1 1 3 1
+1 1 1 4
+1 1 1 1
+2 3
+1 2 3
+4 5 6
+
+<b class=" mathjax-support">Output:</b>
+6
+8
+
+</pre>
+<h3 class=" mathjax-support">Explanation of the example test</h3>
+<p class=" mathjax-support">
+In the first case, the following set of valid Ghariyal-paths is one of the optimal ones:
+
+<ui class=" mathjax-support">
+  </ui></p><li class=" mathjax-support">(1, 1), (1, 2), (1, 3), (1, 4), (2, 4), (3, 4), (4, 4), (5, 4)
+  </li><li class=" mathjax-support">(1, 1), (2, 1), (2, 2), (2, 3), (3, 3), (4, 3), (4, 4), (5, 4)
+  </li><li class=" mathjax-support">(1, 1), (2, 1), (2, 2), (2, 3), (3, 3), (4, 3), (4, 4), (5, 4)
+  </li><li class=" mathjax-support">(1, 1), (2, 1), (3, 1), (3, 2), (3, 3), (4, 3), (4, 4), (5, 4)
+  </li><li class=" mathjax-support">(1, 1), (2, 1), (3, 1), (4, 1), (4, 2), (5, 2), (5, 3), (5, 4)
+  </li><li class=" mathjax-support">(1, 1), (2, 1), (3, 1), (4, 1), (5, 1), (5, 2), (5, 3), (5, 4)
+
+<p class=" mathjax-support"></p>
+<p class=" mathjax-support">
+In the second case, the following set of valid Ghariyal-paths is one of the optimal ones:
+
+<ui class=" mathjax-support">
+  </ui></p></li><li class=" mathjax-support">(1, 1), (1, 2), (1, 3), (2, 3)
+  </li><li class=" mathjax-support">(1, 1), (1, 2), (1, 3), (2, 3)
+  </li><li class=" mathjax-support">(1, 1), (1, 2), (1, 3), (2, 3)
+  </li><li class=" mathjax-support">(1, 1), (2, 1), (2, 2), (2, 3)
+  </li><li class=" mathjax-support">(1, 1), (2, 1), (2, 2), (2, 3)
+  </li><li class=" mathjax-support">(1, 1), (2, 1), (2, 2), (2, 3)
+  </li><li class=" mathjax-support">(1, 1), (2, 1), (2, 2), (2, 3)
+  </li><li class=" mathjax-support">(1, 1), (2, 1), (2, 2), (2, 3)
+
+<p class=" mathjax-support"></p></li>
+        
+
+        <!--.problem-statement-->
+
+        <aside class="problem-info mathjax-support">
+          
+          
+          <p class=" mathjax-support">
+            <label class=" mathjax-support">Author:</label>
+            <span class=" mathjax-support"><a href="/users/kostya_by" data-bindattr-274="274" class=" mathjax-support"><span class="rating mathjax-support" style="display: inline-block; 
+                    font-size: 10px; 
+                    background: #FF7F00;
+                    padding: 0 3px; 
+                    line-height: 1.3; 
+                    color: white;
+                    margin-right: 2px;">6★</span><span class=" mathjax-support">kostya_by</span></a></span>
+          </p>
+           
+          <p class=" mathjax-support">
+            <label class=" mathjax-support">Tester:</label>
+            <span class=" mathjax-support"><a href="/users/pavel1996" data-bindattr-276="276" class=" mathjax-support"><span class="rating mathjax-support" style="display: inline-block; 
+                    font-size: 10px; 
+                    background: #684273;
+                    padding: 0 3px; 
+                    line-height: 1.3; 
+                    color: white;
+                    margin-right: 2px;">4★</span><span class=" mathjax-support">pavel1996</span></a></span>
+          </p>
+           
+          <p class=" mathjax-support">
+            <label class=" mathjax-support">Editorial:</label>
+            <span class=" mathjax-support"><a href="http://discuss.codechef.com/problems/TABLECOV" data-bindattr-278="278" class=" mathjax-support">http://discuss.codechef.com/problems/TABLECOV</a></span>
+          </p>
+           
+          <p class=" mathjax-support">
+            <label class=" mathjax-support">Tags:</label>
+            <span class=" mathjax-support"><a class="problem-tag-small  mathjax-support" href="/tags/problems/dilworth">dilworth</a>, <a class="problem-tag-small  mathjax-support" href="/tags/problems/dynamic-programming">dynamic-programming</a>, <a class="problem-tag-small  mathjax-support" href="/tags/problems/kostya_by">kostya_by</a>, <a class="problem-tag-small  mathjax-support" href="/tags/problems/ltime32">ltime32</a>, <a class="problem-tag-small  mathjax-support" href="/tags/problems/maxflow">maxflow</a>, <a class="problem-tag-small  mathjax-support" href="/tags/problems/partial-order">partial-order</a></span>
+          </p>
+           
+          <p class=" mathjax-support">
+            <label class=" mathjax-support">Date Added:</label>
+            <span class=" mathjax-support">27-12-2015</span>
+          </p>
+          
+          <p class=" mathjax-support">
+            <label class=" mathjax-support">Time Limit:</label>
+            <span class=" mathjax-support">2 - 3 secs</span>
+          </p>
+          <p class=" mathjax-support">
+            <label class=" mathjax-support">Source Limit:</label>
+            <span class=" mathjax-support">50000 Bytes</span>
+          </p>
+          <p class=" mathjax-support">
+            <label class=" mathjax-support">Languages:</label>
+            <span class=" mathjax-support">C, CPP14, JAVA, PYTH, PYTH 3.6, PYPY, CS2, PAS fpc, PAS gpc, RUBY, PHP, GO, NODEJS, HASK, SCALA, D, PERL, FORT, WSPC, ADA, CAML, ICK, BF, ASM, CLPS, PRLG, ICON, SCM qobi, PIKE, ST, NICE, LUA, BASH, NEM, LISP sbcl, LISP clisp, SCM guile, JS, ERL, TCL, PERL6, TEXT, SCM chicken, PYP3, CLOJ, FS</span>
+          </p>
+        </aside>
+        <!--.problem-info-->
+
+        <div class="text-center mathjax-support">
+          <input type="hidden" value="value" data-bindattr-273="273" class=" mathjax-support">
+          
+          <a class="button blue mathjax-support" href="/submit/TABLECOV" data-bindattr-282="282" style="padding:0.4rem 1.5rem 0.425rem;">Submit</a>
+          
+          </div>
+        </div>

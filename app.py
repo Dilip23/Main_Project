@@ -3,7 +3,8 @@ from flask_mysqldb import MySQL
 from wtforms import Form, StringField, TextAreaField, PasswordField, IntegerField, validators
 from passlib.hash import sha256_crypt
 from functools import wraps
-import pycountry
+from werkzeug.utils import secure_filename
+import pycountry,os,subprocess
 
 app = Flask(__name__)
 
@@ -13,6 +14,10 @@ app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = 'Vired17DIL'
 app.config['MYSQL_DB'] = 'project'
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
+
+#Questions folder
+UPLOAD_QUESTIONS_FOLDER = 'E:/main_project/questions_folder'
+USER_SUBMISSIONS_FOLDER = 'E:/main_project/user_submissions'
 
 #init MYSQL
 mysql = MySQL(app)
@@ -124,51 +129,52 @@ def logout():
 @is_logged_in
 def dashboard():
     cur = mysql.connection.cursor()
-    result = cur.execute("SELECT * FROM problems")
-    problems = cur.fetchall()
+    result = cur.execute("SELECT * FROM users WHERE email = %s",[session['email']])
+
     if result>0:
-        return render_template('dashboard.html', problems=problems)
+        user = cur.fetchone()
+        return render_template('dashboard.html', user=user)
     else:
-        msg='No Problems Found'
+        msg='No User Found'
         return render_template('dashboard.html', msg = msg)
     cur.close()
 
-class ProblemForm(Form):
-    title = StringField('Title', [validators.Length(min=1, max=200)])
-    body = TextAreaField('Body', [validators.Length(min=30)])
-    level_type = StringField('Level',[validators.Length(min=1,max=20)])
-    points = IntegerField('Points',[validators.DataRequired()])
-    tags = StringField('Tags',[validators.Length(min = 2, max = 100)])
-
-
-@app.route('/add_problem', methods=['GET','POST'])
-@is_logged_in
-def add_problem():
-    form = ProblemForm(request.form)
-    if request.method == 'POST' and form.validate():
-        title = form.title.data
-        body = form.body.data
-        level_type = form.level_type.data
-        points = form.points.data
-        tags = form.tags.data
-
-        #Create cursor
-        cur = mysql.connection.cursor()
-        #Execute
-        cur.execute("INSERT INTO problems(title,body,level_type,points,tags) VALUES(%s, %s, %s, %s, %s)",(title,body,level_type,points,tags))
-        #Commit to DB
-        mysql.connection.commit()
-        #Close connnection
-        cur.close()
-
-        flash('Problem Created','success')
-        return redirect(url_for('dashboard'))
-    return render_template('add_problem.html',form = form)
+# class ProblemForm(Form):
+#     title = StringField('Title', [validators.Length(min=1, max=200)])
+#     #body = TextAreaField('Body', [validators.Length(min=30)])
+#     level_type = StringField('Level',[validators.Length(min=1,max=20)])
+#     points = IntegerField('Points',[validators.DataRequired()])
+#     tags = StringField('Tags',[validators.Length(min = 2, max = 100)])
+#
+# @app.route('/add_problem', methods=['GET','POST'])
+# @is_logged_in
+# def add_problem():
+#     form = ProblemForm(request.form)
+#     if request.method == 'POST' and form.validate():
+#         title = form.title.data
+#         #body = form.body.data
+#         level_type = form.level_type.data
+#         points = form.points.data
+#         tags = form.tags.data
+#
+#         #TODO: Save file to questions folder and save path in db.
+#         #Create cursor
+#         cur = mysql.connection.cursor()
+#         #Execute
+#         cur.execute("INSERT INTO questions(title,level_type,points,tags) VALUES(%s, %s, %s, %s)",(title,level_type,points,tags))
+#         #Commit to DB
+#         mysql.connection.commit()
+#         #Close connnection
+#         cur.close()
+#
+#         flash('Problem Created','success')
+#         return redirect(url_for('dashboard'))
+#     return render_template('add_problem.html',form = form)
 
 @app.route('/problems')
 def problems():
     cur = mysql.connection.cursor()
-    result = cur.execute("SELECT * FROM problems")
+    result = cur.execute("SELECT * FROM questions")
     problems = cur.fetchall()
     if result>0:
         return render_template('problems.html', problems=problems)
@@ -180,10 +186,73 @@ def problems():
 @app.route('/problem/<string:id>/')
 def problem(id):
     cur = mysql.connection.cursor()
-    result = cur.execute("SELECT * FROM problems WHERE title = %s",[id])
-    print(result)
+    result = cur.execute("SELECT * FROM questions WHERE title = %s",[id])
+    #print(result)
     problem = cur.fetchone()
-    return render_template('problem.html', problem=problem)
+    #Get file
+    filepath = os.path.join(UPLOAD_QUESTIONS_FOLDER,id+'.txt')
+    data = open(filepath,'r+')
+    content = data.read()
+    data.close()
+    return render_template('problem.html', problem=problem,content=content)
+
+@app.route('/problem/<string:id>/getFile',methods=['GET','POST'])
+def getFile(id):
+    if request.files['myfile'].filename != '':
+        if request.method == 'POST':
+            file = request.files['myfile']
+            ## Save file with file ID in database
+            problem = id
+            email = session['email']
+            #Cursor
+            cur = mysql.connection.cursor()
+            #Save to DB
+            cur.execute("INSERT INTO submissions(email,result,problem) VALUES(%s, %s, %s)",[email,1,problem])
+            mysql.connection.commit()
+            #File id
+            file_id = cur.lastrowid
+
+
+            filename = secure_filename(file.filename)
+            path = str(file_id)+'.py'
+            fp = os.path.join(USER_SUBMISSIONS_FOLDER, path)
+            file.save(fp)
+            #Later, change result to compiled and run file.
+            try:
+                output = subprocess.check_output(['python',fp])
+                ans = output.decode('utf-8')
+                code = 0
+                result = code
+                #Update DB
+                print("Success result: ",result)
+                print("file_id: ",file_id)
+                cur.execute("UPDATE submissions SET  result = %s WHERE id = %s",(0,file_id))
+                mysql.connection.commit()
+                print("Success update")
+                cur.close()
+                flash('Submitted','success')
+                return render_template('submit.html',output=ans,error=code)
+            except subprocess.CalledProcessError as call:
+                output = call.output.decode('utf-8')
+                code = call.returncode
+                result = code
+                #Update DB
+                print("Failed result: ",result)
+                print("file_id: ",file_id)
+                cur.execute("UPDATE submissions SET result = %s WHERE id = %s",(1,file_id))
+                mysql.connection.commit()
+                print("Failure update")
+                cur.close()
+                if(code != 0):
+                    error = 'Error'
+                flash('Error','danger')
+                return render_template('submit.html', output=output, error=error)
+            msg = "File submited"
+    else:
+        msg = "No File submitted"
+    return render_template('submit.html',msg=msg)
+
+
 
 
 if __name__ == '__main__':

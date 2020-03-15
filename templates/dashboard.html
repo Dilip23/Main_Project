@@ -3,24 +3,14 @@
 
 {% block body %}
      <h1>Dashboard <small>Welcome {{session.email}}</small> </h1>
-     <a class="btn btn-success"href="/add_problem">Add Problem</a>
+     <!-- <a class="btn btn-success"href="/add_problem">Add Problem</a> -->
      <hr>
-     <table class="table table-striped">
-          <tr>
-               <th>Title</th>
-               <th>Level</th>
-               <th>Points</th>
-               <th>Tags</th>
-          </tr>
 
-          {% for problem in problems %}
-               <tr>
-                    <td>{{problem.title}}</td>
-                    <td>{{problem.level_type}}</td>
-                    <td>{{problem.points}}</td>
-                    <td>{{problem.tags}}</td>
-               </tr>
-          {% endfor %}
+     <h4>Name: </h4><p>{{ user.name }}</p>
+     <h4>Email: </h4><p>{{ user.email }}</p>
+     <h4>Country: </h4><p>{{ user.country }}</p>
+     <h4>Registered on :</h4><p>{{ user.register_date }}</p>
+
 
      </table>
 
