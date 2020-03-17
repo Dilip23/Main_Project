@@ -37,6 +37,27 @@ class RegisterForm(Form):
         validators.EqualTo('confirm', message='Passwords do not match')
         ])
     confirm = PasswordField('Confirm Password',[validators.DataRequired()])
+    submission_count = StringField('Submission Count',[
+        validators.DataRequired()
+    ])
+    problem_solved = StringField('Problem Solved',[
+        validators.DataRequired()
+    ])
+    contribution = StringField('Contribution',[
+        validators.DataRequired()
+    ])
+    follower_count = StringField('Follower Count',[
+        validators.DataRequired()
+    ])
+    max_rating = StringField('Max Rating',[
+        validators.DataRequired()
+    ])
+    rating = StringField('Rating',[
+        validators.DataRequired()
+    ])
+    user_rank = StringField('User Rank',[
+        validators.DataRequired()
+    ])
 
 #User register
 @app.route('/register', methods=['GET', 'POST'])
@@ -48,9 +69,18 @@ def register():
         password = sha256_crypt.hash(str(form.password.data))
         country = request.form['co']
         print(country)
+        submission_count = form.submission_count.data
+        problem_solved = form.problem_solved.data
+        contribution = form.contribution.data
+        follower_count = form.follower_count.data
+        max_rating = form.max_rating.data
+        rating = form.rating.data
+        user_rank = form.user_rank.data
+
+
         #Create Cursor
         cur = mysql.connection.cursor()
-        cur.execute("INSERT INTO users(name,email,password,country) VALUES(%s , %s , %s, %s)",(name, email, password, country))
+        cur.execute("INSERT INTO users(name,email,password,country,submission_count,problem_solved,contribution,follower_count,max_rating,rating,user_rank) VALUES(%s , %s , %s, %s,%s , %s , %s, %s,%s , %s , %s)",(name, email, password, country,submission_count,problem_solved,contribution,follower_count,max_rating,rating,user_rank))
         #Commit to DB
         mysql.connection.commit()
         #Close connection
