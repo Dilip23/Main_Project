@@ -15,6 +15,10 @@
                     <td>{{problem.level_type}}</td>
                     <td>{{problem.points}}</td>
                     <td>{{problem.tags}}</td>
+                    <!-- <td>{{problem.problem_id}}</td> -->
+                    {% if predict_results[problem.problem_id] != 0%}
+                    <td><a href="/problem/{{problem.title}}" class="btn btn-success">Try This!</a></td>
+                    {% endif %}
                </tr>
           {% endfor %}
 

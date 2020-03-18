@@ -5,6 +5,10 @@ from passlib.hash import sha256_crypt
 from functools import wraps
 from werkzeug.utils import secure_filename
 import pycountry,os,subprocess
+import joblib
+import pandas as pd
+import lightgbm as lgb
+import numpy as np
 
 app = Flask(__name__)
 
@@ -169,6 +173,9 @@ def dashboard():
         return render_template('dashboard.html', msg = msg)
     cur.close()
 
+
+
+
 # class ProblemForm(Form):
 #     title = StringField('Title', [validators.Length(min=1, max=200)])
 #     #body = TextAreaField('Body', [validators.Length(min=30)])
@@ -206,12 +213,328 @@ def problems():
     cur = mysql.connection.cursor()
     result = cur.execute("SELECT * FROM questions")
     problems = cur.fetchall()
+
+    ##Step-1: Take each individual problem and get the prediction
+    predict_results = predict()
+
+    ##Step-2: Values that are [1,2,3] must be Recommended
+    avg = sum(predict_results)/len(predict_results)
+    l=[]
+    for i in predict_results:
+        check = i/avg
+        print('$'*50)
+        print('$'*50)
+        print('check: ',check)
+        print('$'*50)
+        print('$'*50)
+        if i/avg < 1:
+            l.append(i)
+        else:
+            l.append(0)
+
+    ##Step-3: Provide a button that redirects to the problem page
+
+
     if result>0:
-        return render_template('problems.html', problems=problems)
+        return render_template('problems.html', problems=problems,predict_results=l)
     else:
         msg='No Problems Found'
         return render_template('problems.html', msg = msg)
     cur.close()
+
+def predict():
+    predict_results = []
+    cur = mysql.connection.cursor()
+    users = cur.execute("SELECT * FROM users WHERE email = %s",[session['email']])
+    users_data = cur.fetchone()
+    question = cur.execute("SELECT * FROM questions")
+    all_questions = cur.fetchall()
+    print('#'*50)
+    print('#'*50)
+    print('#'*50)
+    print(all_questions)
+    print('#'*50)
+    print('#'*50)
+    cur.close()
+    print(users_data)
+    print('*************************************************************************')
+    for question_data in all_questions:
+        print(question_data)
+        user_data = pd.DataFrame([users_data])
+        question_data = pd.DataFrame([question_data])
+        train_data = pd.concat([user_data,question_data],axis = 1)
+        train_data = train_data.drop(['user_id','email','password','title'],axis = 1)
+        print('*'*50)
+        train_data.rename(columns = {'name':'user_id','user_rank':'rank'},inplace = True)
+        train_data['last_online_time_seconds'] = (train_data['last_online_time_seconds']-
+                                            pd.Timestamp("1970-01-01")) // pd.Timedelta('1s')
+        train_data['registration_time_seconds'] = (train_data['registration_time_seconds']-
+                                            pd.Timestamp("1970-01-01")) // pd.Timedelta('1s')
+        train_data['problem_id'] = 'prob_'+str(train_data['problem_id'])
+        train_data['problem_id'] = train_data['problem_id'].astype(object)
+        train_data['user_id'] = train_data['user_id'].astype(object)
+        train_data['submission_count'] = train_data['submission_count'].astype(int)
+        train_data['problem_solved'] = train_data['problem_solved'].astype(int)
+        train_data['contribution'] = train_data['contribution'].astype(int)
+        train_data['follower_count'] = train_data['follower_count'].astype(int)
+        train_data['last_online_time_seconds'] = train_data['last_online_time_seconds'].astype(int)
+        train_data['registration_time_seconds'] = train_data['registration_time_seconds'].astype(int)
+        train_data['country'] = train_data['country'].astype(object)
+        train_data['rank'] = train_data['rank'].astype(object)
+        train_data['level_type'] = train_data['level_type'].astype(object)
+        train_data['tags'] = train_data['tags'].astype(object)
+        train_data['max_rating'] = train_data['max_rating'].astype(float)
+        train_data['rating'] = train_data['rating'].astype(float)
+        train_data['points'] = train_data['points'].astype(float)
+        print(train_data.dtypes)
+
+        #First
+        train_data['seconds'] = (train_data['last_online_time_seconds'].values)%(24 * 3600)
+        train_data['hour'] = (train_data['seconds'].values)//3600
+        train_data['seconds'] = (train_data['seconds'].values)%3600
+        train_data['minutes'] = (train_data['seconds'].values)//60
+        train_data['seconds'] = (train_data['seconds'].values)%60
+
+
+        train_data['reg_seconds'] = (train_data['registration_time_seconds'].values)%(24 * 3600)
+        train_data['reg_hour'] = (train_data['reg_seconds'].values)//3600
+        train_data['reg_seconds'] = (train_data['reg_seconds'].values)%3600
+        train_data['reg_minutes'] = (train_data['reg_seconds'].values)//60
+        train_data['reg_seconds'] = (train_data['reg_seconds'].values)%60
+
+
+        train_data['days_active']=(train_data['last_online_time_seconds']-train_data['registration_time_seconds'])/(60*60*24)
+        train_data['weeks_active'] = train_data['days_active']/7
+        train_data['months_active'] = train_data['days_active']/30
+        train_data['years_active'] = train_data['days_active']/365
+        train_data['submissions per day'] = train_data['submission_count']/train_data['days_active']
+        train_data['submissions per week'] = train_data['submission_count']/train_data['weeks_active']
+        train_data['submissions per month'] = train_data['submission_count']/train_data['months_active']
+        train_data['submissions per year'] = train_data['submission_count']/train_data['years_active']
+
+
+        train_data['problem_solved per day'] = train_data['problem_solved']/train_data['days_active']
+        train_data['problem_solved per week'] = train_data['problem_solved']/train_data['weeks_active']
+        train_data['problem_solved per month'] = train_data['problem_solved']/train_data['months_active']
+        train_data['problem_solved per year'] = train_data['problem_solved']/train_data['years_active']
+
+
+        train_data['decresed rating'] = train_data['max_rating']-train_data['rating']
+        train_data['rating ratio'] = train_data['rating']/train_data['max_rating']
+
+
+        train_data['max rating to points ratio'] = train_data['max_rating']/train_data['points']
+        train_data['rating to points ratio'] = train_data['rating']/train_data['points']
+
+
+        #followers features
+        train_data['submissions per follower'] = train_data['submission_count']/(train_data['follower_count']+1)
+        train_data['problem_solved per follower'] = train_data['problem_solved']/(train_data['follower_count']+1)
+        train_data['contribution per follower'] = train_data['contribution']/(train_data['follower_count']+1)
+        train_data['follwers per day'] = train_data['follower_count']/train_data['days_active']
+        train_data['follwers per week'] = train_data['follower_count']/train_data['weeks_active']
+        train_data['follwers per month'] = train_data['follower_count']/train_data['months_active']
+        train_data['follwers per year'] = train_data['follower_count']/train_data['years_active']
+
+
+        #contributions features
+        train_data['contribution per day'] = train_data['contribution']/train_data['days_active']
+        train_data['contribution per week'] = train_data['contribution']/train_data['weeks_active']
+        train_data['contribution per month'] = train_data['contribution']/train_data['months_active']
+        train_data['contribution per year'] = train_data['contribution']/train_data['years_active']
+
+        #rating features
+        train_data['rating per problem'] = train_data['rating']/train_data['problem_solved']
+        train_data['submission per problem'] = train_data['rating']/train_data['submission_count']
+        train_data['max rating per problem'] = train_data['max_rating']/train_data['problem_solved']
+        train_data['max submission per problem'] = train_data['max_rating']/train_data['submission_count']
+
+        def get_new_columns(name,aggs):
+            return [name + '_' + k + '_' + agg for k in aggs.keys() for agg in aggs[k]]
+        aggs = {}
+        for col in ['problem_id','country','rank','level_type','tags']:
+            aggs[col] = ['nunique','count']
+        aggs['submission_count'] = ['sum','max','min','mean']
+        aggs['problem_solved'] = ['sum','max','min','mean']
+        aggs['contribution'] = ['sum','max','min','mean']
+        aggs['follower_count'] = ['sum','max','min','mean']
+        aggs['max_rating'] = ['max','min','mean']
+        aggs['rating'] = ['max','min','mean']
+        aggs['weeks_active'] = ['sum','max','min','mean']
+        aggs['months_active'] = ['sum','max','min','mean']
+        aggs['years_active'] =  ['sum','max','min','mean']
+        aggs['days_active']= ['sum','max','min','mean']
+        new_columns = get_new_columns('user',aggs)
+        all_data_brach = train_data.groupby('user_id').agg(aggs)
+        all_data_brach.columns = new_columns
+        all_data_brach.reset_index(drop=False,inplace=True)
+        train_data = train_data.merge(all_data_brach,on='user_id',how='left')
+
+        def get_new_columns(name,aggs):
+            return [name + '_' + k + '_' + agg for k in aggs.keys() for agg in aggs[k]]
+        aggs = {}
+        for col in ['user_id','country','rank','level_type','tags']:
+            aggs[col] = ['nunique','count']
+        aggs['submission_count'] = ['sum','max','min','mean']
+        aggs['problem_solved'] = ['sum','max','min','mean']
+        aggs['contribution'] = ['sum','max','min','mean']
+        aggs['follower_count'] = ['sum','max','min','mean']
+        aggs['max_rating'] = ['max','min','mean']
+        aggs['rating'] = ['max','min','mean']
+        aggs['weeks_active'] = ['sum','max','min','mean']
+        aggs['months_active'] = ['sum','max','min','mean']
+        aggs['years_active'] =  ['sum','max','min','mean']
+        aggs['days_active']= ['sum','max','min','mean']
+        new_columns = get_new_columns('problem',aggs)
+        all_data_brach = train_data.groupby('problem_id').agg(aggs)
+        all_data_brach.columns = new_columns
+        all_data_brach.reset_index(drop=False,inplace=True)
+        train_data = train_data.merge(all_data_brach,on='problem_id',how='left')
+
+        def get_new_columns(name,aggs):
+            return [name + '_' + k + '_' + agg for k in aggs.keys() for agg in aggs[k]]
+        aggs = {}
+        for col in ['problem_id','rank','level_type','tags']:
+            aggs[col] = ['nunique','count']
+        aggs['submission_count'] = ['sum','max','min','mean']
+        aggs['problem_solved'] = ['sum','max','min','mean']
+        aggs['contribution'] = ['sum','max','min','mean']
+        aggs['follower_count'] = ['sum','max','min','mean']
+        aggs['max_rating'] = ['max','min','mean']
+        aggs['rating'] = ['max','min','mean']
+        aggs['weeks_active'] = ['sum','max','min','mean']
+        aggs['months_active'] = ['sum','max','min','mean']
+        aggs['years_active'] =  ['sum','max','min','mean']
+        aggs['days_active']= ['sum','max','min','mean']
+        new_columns = get_new_columns('country',aggs)
+        all_data_brach = train_data.groupby('country').agg(aggs)
+        all_data_brach.columns = new_columns
+        all_data_brach.reset_index(drop=False,inplace=True)
+        train_data = train_data.merge(all_data_brach,on='country',how='left')
+
+        def get_new_columns(name,aggs):
+            return [name + '_' + k + '_' + agg for k in aggs.keys() for agg in aggs[k]]
+        aggs = {}
+        for col in ['problem_id','country','level_type','tags']:
+            aggs[col] = ['nunique','count']
+        aggs['submission_count'] = ['sum','max','min','mean']
+        aggs['problem_solved'] = ['sum','max','min','mean']
+        aggs['contribution'] = ['sum','max','min','mean']
+        aggs['follower_count'] = ['sum','max','min','mean']
+        aggs['max_rating'] = ['max','min','mean']
+        aggs['rating'] = ['max','min','mean']
+        aggs['weeks_active'] = ['sum','max','min','mean']
+        aggs['months_active'] = ['sum','max','min','mean']
+        aggs['years_active'] =  ['sum','max','min','mean']
+        aggs['days_active']= ['sum','max','min','mean']
+        new_columns = get_new_columns('rank',aggs)
+        all_data_brach = train_data.groupby('rank').agg(aggs)
+        all_data_brach.columns = new_columns
+        all_data_brach.reset_index(drop=False,inplace=True)
+        train_data = train_data.merge(all_data_brach,on='rank',how='left')
+
+        def get_new_columns(name,aggs):
+            return [name + '_' + k + '_' + agg for k in aggs.keys() for agg in aggs[k]]
+        aggs = {}
+        for col in ['problem_id','country','rank','tags']:
+            aggs[col] = ['nunique','count']
+        aggs['submission_count'] = ['sum','max','min','mean']
+        aggs['problem_solved'] = ['sum','max','min','mean']
+        aggs['contribution'] = ['sum','max','min','mean']
+        aggs['follower_count'] = ['sum','max','min','mean']
+        aggs['max_rating'] = ['max','min','mean']
+        aggs['rating'] = ['max','min','mean']
+        aggs['weeks_active'] = ['sum','max','min','mean']
+        aggs['months_active'] = ['sum','max','min','mean']
+        aggs['years_active'] =  ['sum','max','min','mean']
+        aggs['days_active']= ['sum','max','min','mean']
+        new_columns = get_new_columns('level',aggs)
+        all_data_brach = train_data.groupby('level_type').agg(aggs)
+        all_data_brach.columns = new_columns
+        all_data_brach.reset_index(drop=False,inplace=True)
+        train_data = train_data.merge(all_data_brach,on='level_type',how='left')
+
+        def get_new_columns(name,aggs):
+            return [name + '_' + k + '_' + agg for k in aggs.keys() for agg in aggs[k]]
+        aggs = {}
+        for col in ['problem_id','country','rank','level_type']:
+            aggs[col] = ['nunique','count']
+        aggs['submission_count'] = ['sum','max','min','mean']
+        aggs['problem_solved'] = ['sum','max','min','mean']
+        aggs['contribution'] = ['sum','max','min','mean']
+        aggs['follower_count'] = ['sum','max','min','mean']
+        aggs['max_rating'] = ['max','min','mean']
+        aggs['rating'] = ['max','min','mean']
+        aggs['weeks_active'] = ['sum','max','min','mean']
+        aggs['months_active'] = ['sum','max','min','mean']
+        aggs['years_active'] =  ['sum','max','min','mean']
+        aggs['days_active']= ['sum','max','min','mean']
+        new_columns = get_new_columns('tags',aggs)
+        all_data_brach = train_data.groupby('tags').agg(aggs)
+        all_data_brach.columns = new_columns
+        all_data_brach.reset_index(drop=False,inplace=True)
+        train_data = train_data.merge(all_data_brach,on='tags',how='left')
+
+        for col in ['user_id', 'problem_id', 'country','tags']:
+            train_data[col] = train_data[col].apply( lambda x: hash(str(x)) % 5000)
+
+        from sklearn.preprocessing import LabelEncoder
+        from sklearn import preprocessing
+        # Label Encoding
+        for f in ['level_type', 'rank']:
+            if train_data[f].dtype=='object':
+                lbl = preprocessing.LabelEncoder()
+                lbl.fit(list(train_data[f].values))
+                train_data[f] = lbl.transform(list(train_data[f].values))
+
+        gbm_pickle = joblib.load('lgb_model.pkl')
+        print("Model loaded successfully")
+        y_pred = gbm_pickle.predict(train_data,num_iteration = gbm_pickle.best_iteration)
+        from collections import Counter
+        def eval_f1_lgb_regr(y_pred):
+            label_smoothing_factor = 1.7133
+            dist = Counter({1: 82804, 2: 47320, 3: 14143, 4: 5499, 6: 3033, 5: 2496})
+            for k in dist:
+                dist[k] /= 155295
+            #train_data['attempts_range'].hist()
+
+            acum = 0
+            bound = {}
+            for i in range(6):
+                acum += dist[i]
+                bound[i] = np.percentile(y_pred, acum * 100)
+
+            def classify(x):
+                if x <= bound[1]:
+                    return 1
+                elif x > bound[0] and x < bound[1]:
+                    return 1
+                elif x > bound[1] and x < bound[2]:
+                    return 2
+                elif x > bound[2] and x < bound[3]:
+                    return 3
+                elif x > bound[3] and x < bound[4]:
+                    return 4
+                elif x >bound[4] and x < bound[5]:
+                    return 5
+                else:
+                    return 6
+
+            y_pred = list(map(classify, y_pred))
+            #print('accuracy score:',accuracy_score(y_true,y_pred))
+            #print('recall score: ',max(recall_score(y_true,y_pred,average=None)))
+
+            return y_pred
+        print(y_pred)
+        print('-'*50)
+        result = eval_f1_lgb_regr(y_pred) #Result from ML Model
+        print(result)
+        predict_results.append(y_pred)
+        # if result[0] >= 1:
+        #         output = "Recommended"
+        #         return render_template('submit.html',output=output)
+    return predict_results
+
 
 @app.route('/problem/<string:id>/')
 def problem(id):
@@ -259,7 +582,8 @@ def getFile(id):
                 cur.execute("UPDATE submissions SET  result = %s WHERE id = %s",(0,file_id))
                 mysql.connection.commit()
                 print("Success update")
-                cur.close()
+
+
                 flash('Submitted','success')
                 return render_template('submit.html',output=ans,error=code)
             except subprocess.CalledProcessError as call:
@@ -278,10 +602,18 @@ def getFile(id):
                 flash('Error','danger')
                 return render_template('submit.html', output=output, error=error)
             msg = "File submited"
+
+            # #Code for prediction
+            # cur = mysql.connection.cursor()
+            # users = cur.execute("SELECT * FROM users WHERE email = %s",[session['email']])
+            #
+            # #Converting users to Pandas DataFrame
+            # data = pd.DataFrame([users])
+
+
     else:
         msg = "No File submitted"
     return render_template('submit.html',msg=msg)
-
 
 
 
